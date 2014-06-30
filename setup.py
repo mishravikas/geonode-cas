@@ -121,6 +121,7 @@ setup(name='GeoNode',
         "transifex-client",
         # external services
         "geonode-arcrest==10.2",
+        "cas_consumer",
         # For dynamic models, uncomment to use
         #"psycopg2",
 
