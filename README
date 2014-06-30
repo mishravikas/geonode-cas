@@ -51,7 +51,9 @@ This version of GeoNode has CAS support, follow the below steps to use it in dev
 
 
 Once fully started, you should see a message indicating the address of your geonode.
-The default username and password are ``admin`` and ``admin``::
+
+Currently this version logs in any user with username and password identical as I still haven't included steps to configure a JDBC role service in tomcat7, will be updating it very soon.
+So you can login with username and password ``admin`` and ``admin``::
   
   Development GeoNode is running at http://localhost:8000/
   The GeoNode is an unstoppable machine
