@@ -30,8 +30,7 @@ This version of GeoNode has CAS support, follow the below steps to use it in dev
     git clone https://github.com/mishravikas/geonode-cas.git
 
     # Install GeoNode in editable mode
-    sudo pip install -e geonode
-    cd geonode
+    sudo pip install -e geonode-cas
 
     #open settings.py and update field MACHINE_NAME with your full machine name
 
