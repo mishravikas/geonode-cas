@@ -146,12 +146,13 @@ SITE_ID = 1
 # Login and logout urls override
 # LOGIN_URL = '/account/login/'
 # LOGOUT_URL = '/account/logout/'
+MACHINE_NAME='vikas'
 LOGIN_URL = '/cas/login/'
 
 LOGIN_ERROR_URL = '/cas/login/'
 
 LOGOUT_URL = '/cas/logout/'
-CAS_BASE = 'https://vikas:8443/cas-server-webapp-3.5.2/'
+CAS_BASE = 'https://'+MACHINE_NAME+':8443/cas-server-webapp-3.5.2/'
 
 CAS_SERVICE = 'http://localhost:8000/cas/login/'
 
@@ -168,7 +169,7 @@ CAS_LOGOUT_URL = 'logout/'
 CAS_REDIRECT_ON_LOGOUT = 'http://localhost:8080/geoserver/j_spring_security_logout'
 
 CAS_NEXT_DEFAULT = '/'
-MACHINE_NAME='vikas'
+
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
     'doc', 'docx','gif', 'jpg', 'jpeg', 'ods', 'odt', 'pdf', 'png', 'ppt', 
