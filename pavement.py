@@ -607,6 +607,6 @@ def create_cert():
     res=sh('echo $JAVA_HOME',capture=True)
     if res == '':
         raise Exception("ERROR:$JAVA_HOME variable not set, can not create certificates")
-    sh("keytool -genkey -alias checkingpaver -keyalg RSA -validity 365")
+    sh("keytool -genkey -alias tomcat -keyalg RSA -validity 365")
     sh("keytool -export -alias tomcat -file server.crt")
     sh("keytool -import -file server.crt -keystore $JAVA_HOME/jre/lib/security/cacerts -alias tomcat")
