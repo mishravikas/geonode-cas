@@ -54,7 +54,7 @@ def grab(src, dest, name):
         urllib.urlretrieve(str(src), str(dest))
 
 GEOSERVER_URL="http://build.geonode.org/geoserver/latest/geoserver.war"
-DATA_DIR_URL="http://build.geonode.org/geoserver/latest/data.zip"
+DATA_DIR_URL="https://www.dropbox.com/s/4zo15c4ie2rmshm/data.zip?dl=1"
 JETTY_RUNNER_URL="http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
 
 @task
@@ -88,21 +88,24 @@ def setup_geoserver(options):
         z.extractall(webapp_dir)
 
     _install_data_dir()
+    create_cert()
 
 
 def _install_data_dir():
-    target_data_dir = path('geoserver/data')
-    if target_data_dir.exists():
-        target_data_dir.rmtree()
+    machine_name=geonode.settings.MACHINE_NAME
+    target_data_dir = path('geoserver')
+    data_bin = target_data_dir / os.path.basename(DATA_DIR_URL)
+    grab(DATA_DIR_URL, data_bin, "Geoserver data for CAS")
 
-    original_data_dir = path('geoserver/geoserver/data')
-    justcopy(original_data_dir, target_data_dir)
+    print 'extracting geoserver data'
+    z = zipfile.ZipFile(data_bin, "r")
+    z.extractall(target_data_dir)
 
-    config = path('geoserver/data/security/auth/geonodeAuthProvider/config.xml')
+    config = path('geoserver/data/security/filter/CasAuthenticationFilter/config.xml')
     with open(config) as f:
         xml = f.read()
-        m = re.search('baseUrl>([^<]+)', xml)
-        xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+        m = re.search('casServerUrlPrefix>([^<]+)', xml)
+        xml = xml[:m.start(1)] + "https://"+machine_name+":8443/cas-server-webapp-3.5.2" + xml[m.end(1):]
         with open(config, 'w') as f: f.write(xml)
 
 
@@ -219,7 +222,8 @@ def package(options):
 @task
 @needs(['start_geoserver',
         'sync',
-        'start_django'])
+        'start_django'],
+        'start_cas')
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.')
 ], share_with=['start_django'])
@@ -236,6 +240,13 @@ def stop_django():
     """
     kill('python', 'runserver')
 
+@task
+def start_cas():
+    """
+    Start tomcat server
+    """
+    sh('sudo service tomcat7 stop')
+    sh('sudo service tomcat7 start')
 
 @task
 def stop_geoserver():
@@ -243,8 +254,10 @@ def stop_geoserver():
     Stop GeoServer
     """
     kill('java', 'geoserver')
-    kill('java','acme-ldap')
 
+@task 
+def stop_cas():
+    sh("sudo service stop tomcat7")
 
 @task
 def stop():
@@ -254,6 +267,7 @@ def stop():
     info("Stopping GeoNode ...")
     stop_django()
     stop_geoserver()
+    stop_cas()
 
 
 @cmdopts([
@@ -584,3 +598,15 @@ def justcopy(origin, target):
         if not os.path.exists(target):
             os.makedirs(target)
         shutil.copy(origin, target)
+
+@task
+def create_cert():
+    '''
+    Creating self signed certificates
+    '''
+    res=sh('echo $JAVA_HOME',capture=True)
+    if res == '':
+        raise Exception("ERROR:$JAVA_HOME variable not set, can not create certificates")
+    sh("keytool -genkey -alias checkingpaver -keyalg RSA -validity 365")
+    sh("keytool -export -alias tomcat -file server.crt")
+    sh("keytool -import -file server.crt -keystore $JAVA_HOME/jre/lib/security/cacerts -alias tomcat")
