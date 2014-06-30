@@ -121,7 +121,7 @@ setup(name='GeoNode',
         "transifex-client",
         # external services
         "geonode-arcrest==10.2",
-        "cas_consumer",
+        "django-cas-consumer==0.3",
         # For dynamic models, uncomment to use
         #"psycopg2",
 
@@ -131,7 +131,7 @@ setup(name='GeoNode',
         ],
         dependency_links=[
         #Ading the dependency djang-cas-consumer
-        "git+ssh://git@github.com/mishravikas/django-cas-consumer.git"
+        "https://git@github.com/mishravikas/django-cas-consumer.git@0.3#egg=django-cas-consumer"
         ],
       zip_safe=False,
       )
