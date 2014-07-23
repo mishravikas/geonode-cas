@@ -16,6 +16,10 @@ def create_user():
     user = User.objects.create_user('test_cas', UNUSABLE_PASSWORD)
 
 def login_cas(self):
+    """
+    I am not too sure about this as login() function does not require password
+    have to edit it later
+    """
     user = User.objects.get(username='test_cas',password='test_cas')
     user.backend = 'cas_consumer.backends.CASBackend'
     login(self,user)
